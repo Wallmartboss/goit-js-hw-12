@@ -113,7 +113,7 @@ input:focus {
   border: 1px solid #000;
 }
 
-button {
+.search-btn {
   border-radius: 8px;
   padding: 8px 16px;
   width: 91px;
@@ -129,11 +129,30 @@ button {
   transition: background-color 250ms linear;
 }
 
-button:hover {
+.search-btn:hover,
+.load-more-btn:hover {
   background-color: #6c8cff;
   outline: none;
 }
-
+.load-more-btn {
+  display: block;
+  border-radius: 8px;
+  padding: 8px 16px;
+  width: 130px;
+  height: 40px;
+  background-color: #4e75ff;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0.04em;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 250ms linear;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+}
 input::-webkit-input-placeholder {
   color: #808080;
 }
@@ -142,13 +161,6 @@ input::-moz-placeholder {
   color: #808080;
 }
 
-/* .loader-wrapper {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 100px;
-
-} */
 .loader {
   margin-left: calc((100% - 72px) / 2);
   margin-top: 30px;

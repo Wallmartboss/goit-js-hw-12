@@ -11,6 +11,8 @@ const input = form.querySelector('input');
 let userData;
 const gallery = document.querySelector('ul.gallery');
 const loader = document.querySelector('.loader');
+const moreBnt = document.querySelector('.load-more-btn');
+const qtyOnPage = 15;
 
 function showLoader() {
   loader.classList.remove('is-hidden');
@@ -20,6 +22,13 @@ function hideLoader() {
   loader.classList.add('is-hidden');
 };
 
+function showButton() {
+  moreBnt.classList.remove('is-hidden');
+};
+
+function hideButton() {
+  moreBnt.classList.add('is-hidden');
+};
 function handleSubmit(event) {
     event.preventDefault();
 
@@ -38,9 +47,21 @@ function handleSubmit(event) {
     pixabayRequest(userData)
         .then(response => {
             hideLoader();
-            if (response.hits.length > 0) {
-                  markupGallery(response, gallery);
-              
+          if (response.data.totalHits > 0) {
+            const totalPages = Math.ceil(response.data.totalHits / qtyOnPage);
+              for (let page = 1; page <= totalPages; page++) {
+              markupGallery(response, gallery, qtyOnPage, page);
+              showButton();
+              moreBnt.addEventListener("click", () => {
+                // Check the end of the collection to display an alert
+                if (page > totalPages) {
+                  return iziToast.error({
+                    position: "topRight",
+                    message: "We're sorry, there are no more posts to load"
+                  });
+                }
+              });
+             };
                 let lightbox = new SimpleLightbox('.gallery a', {
                     captionsData: 'alt',
                 });
