@@ -16,6 +16,7 @@ const qtyOnPage = 15;
 let page = 1;
 let totalPages = 0;
 let lightbox = new SimpleLightbox('.gallery a', {captionsData: 'alt'});
+let onPage = qtyOnPage;
 
 function showLoader() {
   loader.classList.remove('is-hidden');
@@ -45,12 +46,20 @@ async function handleSubmit(event) {
     })
   } else {
     userData = textInput;
+    // Скидаємо результати попередніх запитів
     form.reset();
+    page = 1;
+    onPage = qtyOnPage;
     gallery.innerHTML = "";
     showLoader();
     try {
       const response = await pixabayRequest(userData, qtyOnPage, page);
       hideLoader();
+      iziToast.info({
+       title: 'Hello',
+        message: `Found ${response.totalHits} images`,
+        position: 'topCenter',
+      });
       if (!response.totalHits) {
         return iziToast.error({
           title: 'Error',
@@ -59,7 +68,11 @@ async function handleSubmit(event) {
         })
       } else {
         totalPages = Math.ceil(response.totalHits / qtyOnPage);
-        markupGallery(response, gallery, qtyOnPage);
+        // У випадку, коли результатів менше 15, коригуємо розмітку 
+        if (page === totalPages) {
+          onPage = (response.totalHits - qtyOnPage * (page - 1));
+        };
+        markupGallery(response, gallery, onPage);
         lightbox.refresh();
         if (totalPages > 1) {
           showButton()
@@ -75,23 +88,31 @@ async function handleSubmit(event) {
               
 async function loadMore() {
   page += 1;
-            try {
-             const response = await pixabayRequest(userData, qtyOnPage, page);
-              markupGallery(response, gallery, qtyOnPage);
-              lightbox.refresh();
-              const rect = document.querySelector('ul.gallery').firstElementChild.getBoundingClientRect();
-              const cardHeight = rect.height;
-              window.scrollBy({
-                top: 2 * cardHeight,
-                behavior: "smooth",
-              });
+              try {
                 if (page > totalPages) {
-                hideButton();
-                return iziToast.error({
-                  position: "topRight",
-                  message: "We're sorry, but you've reached the end of search results."
-                });
-              }
+                  hideButton();
+                  return iziToast.error({
+                    position: "topRight",
+                    message: "We're sorry, but you've reached the end of search results."
+                  });
+                } else {
+                  const response = await pixabayRequest(userData, qtyOnPage, page);
+                  if (page === totalPages) {
+                    onPage = (response.totalHits - qtyOnPage * (page - 1));
+                  };
+                  markupGallery(response, gallery, onPage);
+                  lightbox.refresh();
+                  // Визначаємо висоту картки та встановлюємо розмір прокрутки в 2 картки
+                  const rect = document.querySelector('ul.gallery').firstElementChild.getBoundingClientRect();
+                  const scrollUp = rect.height * 2;
+                  // додаємо прокрутку із затримкою на розмітку 
+                  setTimeout(function () {
+                    window.scrollBy({
+                      top: scrollUp, // Прокручуємо вниз на 2 зображення
+                      behavior: 'smooth' // Добавляємо плавності прокрутці
+                    });
+                  }, 400);  
+                };
               }
               catch (error) {
                 console.log(error);

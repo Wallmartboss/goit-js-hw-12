@@ -1,7 +1,7 @@
 
-export function markupGallery(response, gallery, qtyOnPage) {
+export function markupGallery(response, gallery, onPage) {
   let images = [];
-  for (let i = 0; i < qtyOnPage; i++) {
+  for (let i = 0; i < onPage; i++) {
                    let pic = {};
                     pic.url = response.hits[i].webformatURL;
                     pic.largeUrl = response.hits[i].largeImageURL;
